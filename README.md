@@ -1,1 +1,1 @@
-# CPSC410_Visualization
+Project 2: Visualization
