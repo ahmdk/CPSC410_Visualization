@@ -18,3 +18,4 @@ def method3():
 method1()
 method2()
 method3()
+print(f.function_frequency)

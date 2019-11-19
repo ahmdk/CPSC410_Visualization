@@ -1,4 +1,5 @@
 import inspect
+import json
 
 
 class Frequency:
@@ -11,7 +12,7 @@ class Frequency:
         "check which function you re being called from and increment that function's call frequency"
         caller = inspect.stack()[1][3]
         print(caller)
-        self.function_frequency[caller]
+        self.function_frequency[caller] = 1
 
     def callerFunc(self):
         self.count()
