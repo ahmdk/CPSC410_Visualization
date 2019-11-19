@@ -9,11 +9,16 @@ class Frequency:
 
     def count(self):
         "check which function you re being called from and increment that function's call frequency"
-        caller = inspect.stack()[2][3]
-        self.function_frequency[caller] += 1
+        caller = inspect.stack()[1][3]
+        print(caller)
+        self.function_frequency[caller]
+
+    def callerFunc(self):
+        self.count()
+        print(self.function_frequency)
 
 
 if __name__ == "__main__":
     f = Frequency()
-    f.count()
+    f.callerFunc()
 
