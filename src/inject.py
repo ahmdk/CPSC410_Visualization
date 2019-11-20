@@ -5,8 +5,9 @@ import fileinput
 
 # print ("directory file:", str(sys.argv[1]))
 
-dir = '/Users/mike/Documents/School/sixth/first/CPSC410/demoProject/tetris_game'
-dirToAPI = '/Users/mike/Documents/School/sixth/first/CPSC410/Project/CPSC410_Visualization/src/loggerAPI.py'
+dir = "/Users/mike/Documents/School/sixth/first/CPSC410/demoProject/tetris_game"
+dirToAPI = "/Users/mike/Documents/School/sixth/first/CPSC410/Project/CPSC410_Visualization/src/loggerAPI.py"
+
 
 def appendTabs(indexOfDef):
     output = ""
@@ -22,6 +23,7 @@ def appendTabs(indexOfDef):
             output += "\t"
 
     return output
+
 
 def injectToContents(content):
     importline = "import loggerAPI\n"
@@ -45,11 +47,10 @@ def injectToContents(content):
     for line in newLines:
         newLine = line + "\n"
         newContent += newLine
-    
+
     newContent += "\n" + "endlog()"
     return newContent
-    
-        
+
 
 def injectToFile(pathToFile):
     f = open(pathToFile, "r")
@@ -61,14 +62,14 @@ def injectToFile(pathToFile):
     f = open(pathToFile, "w")
     f.write(content2)
     f.close()
-    
+
 
 # Main part of the script
 # traverses the dir specified above, and finds the python files and calls the inject code
 for root, dirs, files in os.walk(dir):
     path = root.split(os.sep)
     for file in files:
-        if (file.endswith(".py")):
+        if file.endswith(".py"):
             pathToFile = root + "/" + file
             injectToFile(pathToFile)
 

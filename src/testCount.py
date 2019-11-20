@@ -1,21 +1,23 @@
-from frequency import Frequency
+from frequency import Frequency  # inject at import section
 
-f = Frequency()
+f = Frequency()  # inject before first function def
 
-
-def method1():
+# inject at f.count() at every function definition in the codebase
+def function1():
     f.count()
 
 
-def method2():
+def function2():
     f.count()
 
 
-def method3():
+def function3():
     f.count()
 
 
-method1()
-method2()
-method3()
-print(f.function_frequency)
+function1()
+function2()
+function3()
+function2()
+
+f.endCountLog()  # inject at end of file
