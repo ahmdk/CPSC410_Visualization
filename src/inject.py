@@ -82,6 +82,19 @@ def tabsToSpaces(pathToFile):
     exportFile.close()
 
 
+def tabsToSpaces(pathToFile):
+    inputFile = open(pathToFile, "r")
+    content = inputFile.read()
+    inputFile.close()
+    lines = content.splitlines()
+    exportFile = open(pathToFile, "w")
+    for line in lines:
+        # replace each tab with 4 spaces
+        new_line = line.replace("\t", "    ")
+        exportFile.write(new_line + "\n")
+    exportFile.close()
+
+
 excluded_files = ["loggerAPI.py"]
 # Main part of the script
 # traverses the dir specified above, and finds the python files and calls the inject code
