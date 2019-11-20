@@ -12,7 +12,7 @@ class Frequency:
     def count(self):
         "check which function you re being called from and increment that function's call frequency"
         caller = inspect.stack()[1][3]
-        if self.function_frequency[caller] == None:
+        if caller not in self.function_frequency:
             self.function_frequency[caller] = 1
         else:
             self.function_frequency[caller] += 1
