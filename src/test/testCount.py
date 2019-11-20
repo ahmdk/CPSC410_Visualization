@@ -3,7 +3,6 @@ def function1():
 
 
 def function2():
-
     pass
 
 

@@ -1,12 +1,16 @@
 import sys
 import os
-from shutil import copy
 import fileinput
+import argparse
+from shutil import copy
 
-# print ("directory file:", str(sys.argv[1]))
+parser = argparse.ArgumentParser()
+parser.add_argument("repo", help="path of the repo to be analyzed")
+parser.add_argument("logger", help="full path of logger script")
+args = parser.parse_args()
 
-dir = "/Users/mike/Documents/School/sixth/first/CPSC410/demoProject/tetris_game"
-dirToAPI = "/Users/mike/Documents/School/sixth/first/CPSC410/Project/CPSC410_Visualization/src/loggerAPI.py"
+dir = args.repo
+dirToAPI = args.logger
 
 
 def appendTabs(indexOfDef):
@@ -27,9 +31,9 @@ def appendTabs(indexOfDef):
 
 def injectToContents(content):
     importline = "import loggerAPI\n"
-    fromline = "from loggerAPI import startlog, endlog, log\n"
+    fromline = "from loggerAPI import startlog, log, f\n"
     startlogline = "startlog()\n"
-    starterContent = importline + fromline + startlogline + content
+    starterContent = fromline + importline + startlogline + content
     lines = starterContent.splitlines()
 
     newLines = []
@@ -39,7 +43,10 @@ def injectToContents(content):
         newLines.append(line)
         if indexOfDef > -1:
             logline = appendTabs(indexOfDef)
-            logline += "log()"
+            logline += "log()\n"
+            logline += appendTabs(indexOfDef)
+            logline += "f.count()"
+
             newLines.append(logline)
 
     newContent = ""
@@ -47,8 +54,6 @@ def injectToContents(content):
     for line in newLines:
         newLine = line + "\n"
         newContent += newLine
-
-    newContent += "\n" + "endlog()"
     return newContent
 
 
@@ -64,14 +69,30 @@ def injectToFile(pathToFile):
     f.close()
 
 
+def tabsToSpaces(pathToFile):
+    inputFile = open(pathToFile, "r")
+    content = inputFile.read()
+    inputFile.close()
+    lines = content.splitlines()
+    exportFile = open(pathToFile, "w")
+    for line in lines:
+        # replace each tab with 4 spaces
+        new_line = line.replace("\t", "    ")
+        exportFile.write(new_line + "\n")
+    exportFile.close()
+
+
+excluded_files = ["loggerAPI.py"]
 # Main part of the script
 # traverses the dir specified above, and finds the python files and calls the inject code
 for root, dirs, files in os.walk(dir):
     path = root.split(os.sep)
     for file in files:
-        if file.endswith(".py"):
+        if file.endswith(".py") and file not in excluded_files:
             pathToFile = root + "/" + file
             injectToFile(pathToFile)
+            tabsToSpaces(pathToFile)
+
 
 # need to copy the api file to the directory
 copy(dirToAPI, dir)
