@@ -2,7 +2,7 @@ import sys
 import os
 import fileinput
 import argparse
-from   shutil import copy
+from shutil import copy
 
 parser = argparse.ArgumentParser()
 parser.add_argument("repo", help="path of the repo to be analyzed")
@@ -11,6 +11,7 @@ args = parser.parse_args()
 
 dir = args.repo
 dirToAPI = args.logger
+
 
 def appendTabs(indexOfDef):
     output = ""
@@ -27,11 +28,12 @@ def appendTabs(indexOfDef):
 
     return output
 
+
 def injectToContents(content):
     importline = "import loggerAPI\n"
-    fromline = "from loggerAPI import startlog, log\n"
+    fromline = "from loggerAPI import startlog, log, f\n"
     startlogline = "startlog()\n"
-    starterContent =  fromline + importline + startlogline + content
+    starterContent = fromline + importline + startlogline + content
     lines = starterContent.splitlines()
 
     newLines = []
@@ -41,7 +43,10 @@ def injectToContents(content):
         newLines.append(line)
         if indexOfDef > -1:
             logline = appendTabs(indexOfDef)
-            logline += "log()"
+            logline += "log()\n"
+            logline += appendTabs(indexOfDef)
+            logline += "f.count()"
+
             newLines.append(logline)
 
     newContent = ""
@@ -50,7 +55,8 @@ def injectToContents(content):
         newLine = line + "\n"
         newContent += newLine
     return newContent
-    
+
+
 def injectToFile(pathToFile):
     f = open(pathToFile, "r")
     content = f.read()
@@ -62,24 +68,40 @@ def injectToFile(pathToFile):
     f.write(content2)
     f.close()
 
+
 def tabsToSpaces(pathToFile):
-    inputFile  = open(pathToFile, "r")
+    inputFile = open(pathToFile, "r")
     content = inputFile.read()
     inputFile.close()
     lines = content.splitlines()
     exportFile = open(pathToFile, "w")
     for line in lines:
         # replace each tab with 4 spaces
-        new_line = line.replace('\t', '    ')
-        exportFile.write(new_line + '\n') 
+        new_line = line.replace("\t", "    ")
+        exportFile.write(new_line + "\n")
     exportFile.close()
 
+
+def tabsToSpaces(pathToFile):
+    inputFile = open(pathToFile, "r")
+    content = inputFile.read()
+    inputFile.close()
+    lines = content.splitlines()
+    exportFile = open(pathToFile, "w")
+    for line in lines:
+        # replace each tab with 4 spaces
+        new_line = line.replace("\t", "    ")
+        exportFile.write(new_line + "\n")
+    exportFile.close()
+
+
+excluded_files = ["loggerAPI.py"]
 # Main part of the script
 # traverses the dir specified above, and finds the python files and calls the inject code
 for root, dirs, files in os.walk(dir):
     path = root.split(os.sep)
     for file in files:
-        if (file.endswith(".py")):
+        if file.endswith(".py") and file not in excluded_files:
             pathToFile = root + "/" + file
             injectToFile(pathToFile)
             tabsToSpaces(pathToFile)
