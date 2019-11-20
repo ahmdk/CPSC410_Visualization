@@ -1,7 +1,13 @@
 import inspect
-import time
 import json
 import logging
+from pathlib import Path
+
+root_path = Path(__file__).parent
+
+
+def create_output_directory():
+    Path(root_path/'data').mkdir(parents=True, exist_ok=True)
 
 
 def log():
@@ -15,7 +21,7 @@ def log():
 
 def startlog():
     logging.basicConfig(
-        filename="output.txt",
+        filename=Path(root_path/'data') / "output.txt",
         filemode="w",
         format="%(asctime)s.%(msecs)03d \n%(message)s",
         datefmt="%H:%M:%S",
@@ -28,15 +34,17 @@ class Frequency:
 
     def __init__(self):
         self.function_frequency = {}
-        self.output_file = open("function_count.json", "w")
+        self.output_file = open(Path(root_path/'data') / "function_count.json", "w")
 
     def count(self):
         "check which function you re being called from and increment that function's call frequency"
+        filename = inspect.stack()[1][1]
         caller = inspect.stack()[1][3]
-        if caller not in self.function_frequency:
-            self.function_frequency[caller] = 1
+        entry = str(filename) + ";" + str(caller)
+        if entry not in self.function_frequency:
+            self.function_frequency[entry] = 1
         else:
-            self.function_frequency[caller] += 1
+            self.function_frequency[entry] += 1
 
     def endCountLog(self):
         result = json.dumps(self.function_frequency, indent=4)
@@ -46,5 +54,7 @@ class Frequency:
     def __del__(self):
         self.endCountLog()
 
+
+create_output_directory()
 
 f = Frequency()
