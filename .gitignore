@@ -8,6 +8,11 @@ __pycache__/
 
 #VScode
 *.vscode
+
+src/test/testCount.py
+src/test/loggerAPI.py
+function_count.json
+output.txt
 # Distribution / packaging
 .Python
 build/
