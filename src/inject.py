@@ -1,6 +1,4 @@
-import sys
 import os
-import fileinput
 import argparse
 from shutil import copy
 from itertools import islice
@@ -128,9 +126,7 @@ def injectToFile(pathToFile):
     f = open(pathToFile, "r")
     content = f.read()
     content2 = injectToContents(content)
-
-    print(content2)
-
+    print("Inject complete for: " + pathToFile)
     f = open(pathToFile, "w")
     f.write(content2)
     f.close()
