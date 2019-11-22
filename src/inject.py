@@ -3,6 +3,22 @@ import os
 import fileinput
 import argparse
 from shutil import copy
+from itertools import islice
+
+def_pos = None
+def_flag = False
+
+
+def window(seq, n=2):
+    """Sliding window iterator."""
+    it = iter(seq)
+    result = tuple(islice(it, n))
+    if len(result) == n:
+        yield result
+    for elem in it:
+        result = result[1:] + (elem,)
+        yield result
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("repo", help="path of the repo to be analyzed")
@@ -13,17 +29,32 @@ dir = args.repo
 dirToAPI = args.logger
 
 
-def appendTabs(indexOfDef):
+def appendTabs(indexOfReturn):
+    output = ""
+    if indexOfReturn == 4:
+        return "\t\t"
+    elif indexOfReturn == 0:
+        return "\t"
+    elif indexOfReturn % 4 != 0:
+        return output
+    else:
+        time = indexOfReturn / 4
+        for i in range(0, int(time) + 1):
+            output += "\t"
+
+    return output
+
+def appendReturnTabs(indexOfDef):
     output = ""
     if indexOfDef == 4:
-        return "\t\t"
-    elif indexOfDef == 0:
         return "\t"
+    elif indexOfDef == 0:
+        return ""
     elif indexOfDef % 4 != 0:
         return output
     else:
         time = indexOfDef / 4
-        for i in range(0, time + 1):
+        for i in range(0, int(time)):
             output += "\t"
 
     return output
@@ -31,29 +62,65 @@ def appendTabs(indexOfDef):
 
 def injectToContents(content):
     importline = "import loggerAPI\n"
-    fromline = "from loggerAPI import startlog, log, f\n"
-    startlogline = "startlog()\n"
-    starterContent = fromline + importline + startlogline + content
+    fromline = "from loggerAPI import t\n"
+    starterContent = fromline + importline + content
     lines = starterContent.splitlines()
 
     newLines = []
 
-    for line in lines:
-        indexOfDef = line.find("def ")
-        newLines.append(line)
-        if indexOfDef > -1:
-            logline = appendTabs(indexOfDef)
-            logline += "log()\n"
-            logline += appendTabs(indexOfDef)
-            logline += "f.count()"
+    last_two_lines = lines[-2:]
 
-            newLines.append(logline)
+    global def_pos
+    global def_flag
+
+    for curr, _next, far_next in window(lines, 3):
+        newLines.append(curr)
+        index_of_def = curr.find("def ")
+
+        if index_of_def > -1:
+            def_pos = index_of_def
+            start_log_line = appendTabs(index_of_def)
+            start_log_line += "t.start_timer()\n"
+            newLines.append(start_log_line)
+            def_flag = True
+
+        if (def_pos != None) and (_next.find("return") > -1):
+            return_pos = _next.find("return")
+            end_log_line = appendReturnTabs(return_pos)
+            end_log_line += "t.end_timer()\n"
+            newLines.append(end_log_line)
+            if return_pos == def_pos:
+                def_flag = False
+
+        if (def_pos != None) and (far_next.lstrip().find("def ") > -1) and (curr.find("return") == -1) \
+                and def_flag:
+            end_log_line = appendTabs(def_pos)
+            end_log_line += "t.end_timer()\n"
+            newLines.append(end_log_line)
+            def_flag = False
+
+        if (def_pos != None) and (_next.lstrip().find("def ") > -1) and def_flag:
+            end_log_line = appendTabs(def_pos)
+            end_log_line += "t.end_timer()\n"
+            newLines.append(end_log_line)
+            def_flag = False
+
+        if (def_pos != None) and (_next == '') and (far_next == '') and def_flag:
+            end_log_line = appendTabs(def_pos)
+            end_log_line += "t.end_timer()\n"
+            newLines.append(end_log_line)
+            def_flag = False
 
     newContent = ""
 
     for line in newLines:
         newLine = line + "\n"
         newContent += newLine
+
+    for line in last_two_lines:
+        newLine = line + "\n"
+        newContent += newLine
+
     return newContent
 
 
