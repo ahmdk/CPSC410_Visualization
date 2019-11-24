@@ -20,3 +20,14 @@ Example run
 ```
 py -3.8 inject.py "D:\CPSC 410 Software engineering\Visualization_repo\tetris_game" "D:\CPSC 410 Software engineering\Visualization_repo\src\loggerAPI.py"
 ```
+
+## Tasks
+
+| Task | Team member |
+| --- | --- |
+| Find the file, inject instrumentation code | Mike |
+| Code analysis: timing and hit count | Moshin |
+| Code analysis: call stacks | Ahmed |
+| Data preparation for visualization | Seongchan |
+| visualization | Jin Min |
+| video | Seongchan |
