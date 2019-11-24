@@ -16,6 +16,8 @@ def export_run_time():
     f = open(Path(root_path/'data') / "run_time.csv", "w")
     wr = csv.writer(f)
 
+    wr.writerow(["file_name", "method", "runtime"])
+
     output_json = json.load(open(directory))
 
     for major_key, value in output_json.items():
