@@ -6,6 +6,13 @@ __pycache__/
 # C extensions
 *.so
 
+#VScode
+*.vscode
+
+src/test/testCount.py
+src/test/loggerAPI.py
+function_count.json
+output.txt
 # Distribution / packaging
 .Python
 build/
@@ -107,4 +114,6 @@ tetris_game/
 tetris_game-master/
 tetris_game-master.zip
 
-/.idea
+output.txt
+
+.idea
